@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>Tarixiy Shaxslar Entsiklopediyasi</title>
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body {
+    margin: 0;
+    background: #F0E6CF;
+    color: #2B2118;
+    font-family: -apple-system, Roboto, "Segoe UI", Arial, sans-serif;
+  }
+  .serif { font-family: Georgia, "Times New Roman", serif; }
+  header {
+    padding: 28px 20px 20px;
+    text-align: center;
+    border-bottom: 3px double #C9A227;
+  }
+  header .eyebrow {
+    letter-spacing: 0.3em;
+    font-size: 11px;
+    color: #A4462B;
+    font-weight: 600;
+    margin: 0 0 4px;
+  }
+  header h1 {
+    font-size: 1.7rem;
+    font-weight: 700;
+    color: #1B2A4A;
+    line-height: 1.15;
+    margin: 0;
+  }
+  header p.sub {
+    margin-top: 8px;
+    font-size: 13px;
+    color: #5A5140;
+  }
+  .controls { padding: 16px 16px 4px; max-width: 720px; margin: 0 auto; }
+  #search {
+    width: 100%;
+    padding: 11px 14px;
+    border-radius: 10px;
+    border: 1.5px solid #C9A227;
+    background: #FAF5E8;
+    color: #2B2118;
+    font-size: 14px;
+    outline: none;
+  }
+  .chip-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+    overflow-x: auto;
+    padding-bottom: 6px;
+  }
+  .chip {
+    padding: 7px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    white-space: nowrap;
+    border: 1.5px solid #1B2A4A;
+    background: transparent;
+    color: #1B2A4A;
+    font-weight: 500;
+  }
+  .chip.active { background: #1B2A4A; color: #F0E6CF; }
+  .chip.era { border: 1px solid #C9A227; color: #5A5140; font-weight: 400; }
+  .chip.era.active { background: #C9A227; color: #1B2A4A; font-weight: 600; }
+  main { padding: 8px 16px 60px; max-width: 720px; margin: 0 auto; }
+  .count { font-size: 12px; color: #5A5140; margin: 8px 0; }
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  @media (min-width: 520px) {
+    .grid { grid-template-columns: 1fr 1fr; }
+  }
+  .card {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    text-align: left;
+    padding: 14px;
+    border-radius: 14px;
+    background: #FAF5E8;
+    border: 1px solid #DDD0AE;
+    box-shadow: 0 1px 3px rgba(27,42,74,0.08);
+  }
+  .card:active { transform: scale(0.98); }
+  .mono {
+    width: 48px; height: 48px; min-width: 48px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: #F0E6CF;
+    font-family: Georgia, serif;
+    font-size: 21px;
+    font-weight: 700;
+    border: 2px solid #C9A227;
+  }
+  .card .name { font-weight: 600; font-size: 14px; color: #1B2A4A; line-height: 1.25; }
+  .card .years { font-size: 11.5px; color: #A4462B; margin-top: 2px; }
+  .card .role { font-size: 12px; color: #5A5140; margin-top: 4px; }
+  .empty { text-align: center; font-size: 13px; color: #5A5140; margin-top: 40px; }
+
+  .overlay {
+    position: fixed; inset: 0;
+    background: rgba(27,42,74,0.55);
+    display: none;
+    align-items: flex-end;
+    justify-content: center;
+    z-index: 50;
+  }
+  .overlay.show { display: flex; }
+  .sheet {
+    width: 100%;
+    max-width: 560px;
+    max-height: 85vh;
+    overflow-y: auto;
+    background: #FAF5E8;
+    border-top: 1px solid #C9A227;
+    border-radius: 20px 20px 0 0;
+    padding: 22px 20px 30px;
+  }
+  .sheet-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+  .sheet-head { display: flex; align-items: center; gap: 12px; }
+  .sheet h2 { font-size: 1.35rem; font-weight: 700; color: #1B2A4A; margin: 0; line-height: 1.15; }
+  .sheet .meta { font-size: 11.5px; color: #A4462B; margin-top: 2px; }
+  .close-btn { font-size: 22px; background: none; border: none; color: #5A5140; line-height: 1; padding: 4px 8px; }
+  .label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: #5A5140; font-weight: 600; margin: 18px 0 6px; }
+  .bio { font-size: 14px; line-height: 1.6; }
+  .bio::first-letter { font-family: Georgia, serif; font-size: 2.3rem; font-weight: 700; color: #A4462B; float: left; line-height: 0.75; margin-right: 7px; margin-top: 5px; }
+  ul.facts { margin: 0; padding: 0; list-style: none; }
+  ul.facts li { font-size: 13.5px; display: flex; gap: 8px; margin-bottom: 7px; }
+  ul.facts li::before { content: "◆"; color: #C9A227; }
+</style>
+</head>
+<body>
+
+<header>
+  <p class="eyebrow">O'QITUVCHI UCHUN QO'LLANMA</p>
+  <h1 class="serif">Tarixiy Shaxslar Entsiklopediyasi</h1>
+  <p class="sub">Markaziy Osiyo va jahon tarixidan buyuk siymolar</p>
+</header>
+
+<div class="controls">
+  <input id="search" type="text" placeholder="Ism yoki lavozim bo'yicha qidirish..." />
+  <div class="chip-row" id="regionRow"></div>
+  <div class="chip-row" id="eraRow"></div>
+</div>
+
+<main>
+  <p class="count" id="count"></p>
+  <div class="grid" id="grid"></div>
+  <p class="empty" id="empty" style="display:none;">Hech narsa topilmadi. Boshqa so'z bilan qidirib ko'ring.</p>
+</main>
+
+<div class="overlay" id="overlay">
+  <div class="sheet" id="sheet"></div>
+</div>
+
+<script>
+const FIGURES = [
+  { id:1, name:"Amir Temur", years:"1336–1405", region:"markaziy", era:"O'rta asrlar", role:"Sarkarda, Temuriylar davlati asoschisi", bio:"Movarounnahrda markazlashgan qudratli davlat barpo etgan sarkarda va davlat arbobi. Samarqandni poytaxt qilib, uni ilm-fan va me'morchilik markaziga aylantirdi.", facts:["Temuriylar imperiyasini tashkil etdi","Samarqandda Registon majmuasi qurilishiga asos soldi","Harbiy strategiya va davlat boshqaruvida o'z tizimini yaratdi"] },
+  { id:2, name:"Mirzo Ulug'bek", years:"1394–1449", region:"markaziy", era:"O'rta asrlar", role:"Hukmdor, astronom, matematik", bio:"Amir Temurning nabirasi, Samarqandda o'z davrining eng yirik rasadxonasini qurdirgan olim-hukmdor. Yulduzlar jadvalini tuzib, dunyo astronomiyasiga katta hissa qo'shdi.", facts:["Samarqand rasadxonasini qurdirdi","\"Ziji Ko'ragoniy\" yulduzlar jadvalini yaratdi","Ulug'bek madrasasiga asos soldi"]{ id:3, name:"Al-Xorazmiy", years:"783–850", region:"markaziy", era:"O'rta asrlar", role:"Matematik, astronom", bio:"\"Algebra\" fanining asoschisi hisoblanadi. Uning asarlari orqali arab raqamlari va o'nlik hisoblash tizimi Yevropaga tarqaldi.", facts:["\"Al-jabr\" asari algebra faniga asos soldi","\"Algoritm\" so'zi uning nomidan olingan","Astronomik jadvallar tuzdi"] },
+  { id:4, name:"Abu Ali ibn Sino", years:"980–1037", region:"markaziy", era:"O'rta asrlar", role:"Tabib, faylasuf, olim", bio:"O'rta asrning eng buyuk tabiblaridan biri. Uning \"Tib qonunlari\" asari asrlar davomida Yevropa universitetlarida darslik sifatida o'qitilgan.", facts:["\"Tib qonunlari\" (Kanun) asarini yozdi","Falsafa, mantiq va tibbiyot bo'yicha 450dan ortiq asar qoldirdi","Zamonaviy tibbiyotning ko'plab asoslarini qo'ydi"] },
+  { id:5, name:"Zahiriddin Muhammad Bobur", years:"1483–1530", region:"markaziy", era:"Yangi davr", role:"Hukmdor, shoir, Boburiylar sulolasi asoschisi", bio:"Farg'onada tug'ilib, Hindistonda Boburiylar imperiyasiga asos solgan davlat arbobi va yozuvchi. \"Boburnoma\" asari jahon adabiyotining nodir yodgorligi.", facts:["Hindistonda Boburiylar sulolasiga asos soldi","\"Boburnoma\" xotira-kundaligini yozdi","She'riyatda ham ijod qildi"] },
+  { id:6, name:"Alisher Navoiy", years:"1441–1501", region:"markaziy", era:"O'rta asrlar", role:"Shoir, mutafakkir, davlat arbobi", bio:"O'zbek adabiy tilining asoschisi, buyuk shoir va davlat arbobi. \"Xamsa\" asari bilan turkiy tilda birinchi bo'lib besh dostonlar to'plamini yaratdi.", facts:["\"Xamsa\" besh dostonini yaratdi","O'zbek adabiy tili rivojiga asos soldi","Ilm-fan va san'atni homiylik qildi"] },
+  { id:7, name:"Ahmad al-Farg'oniy", years:"798–861", region:"markaziy", era:"O'rta asrlar", role:"Astronom, matematik", bio:"Farg'ona vodiysidan yetishib chiqqan buyuk astronom. Yer aylanasini o'lchash va falakiyot bo'yicha asarlari O'rta asr fanida katta o'rin tutadi.", facts:["Yer diametrini aniq hisoblab chiqdi","\"Falakiyot ilmi asoslari\" asarini yozdi","Nil daryosi suv o'lchagichini yaratdi"] },
+  { id:8, name:"Abu Rayhon Beruniy", years:"973–1048", region:"markaziy", era:"O'rta asrlar", role:"Qomusiy olim", bio:"Astronomiya, geografiya, tarix va tibbiyot sohalarida ijod qilgan qomusiy olim. Yer Quyosh atrofida aylanishi haqidagi g'oyalarni ilgari surgan.", facts:["150dan ortiq ilmiy asar yozdi","Hindiston tarixi va madaniyatini tadqiq qildi","Geodeziya sohasida yangi usullar ishlab chiqdi"] },
+  { id:9, name:"Jaloliddin Manguberdi", years:"1199–1231", region:"markaziy", era:"O'rta asrlar", role:"Xorazmshoh, sarkarda", bio:"Mo'g'ul bosqinchilariga qarshi so'nggi damigacha kurashgan Xorazmshoh. Vatanparvarlik ramziga aylangan sarkarda.", facts:["Parvon jangida mo'g'ullarni yengdi","Vatan mustaqilligi uchun umr bo'yi kurashdi","O'zbek xalqi tarixida qahramon sifatida ulug'lanadi"] },
+  { id:10, name:"Mahmud Koshg'ariy", years:"1005–1102", region:"markaziy", era:"O'rta asrlar", role:"Tilshunos olim", bio:"Turkiy tillarning birinchi izohli lug'ati — \"Devonu lug'otit turk\" asarining muallifi. Turkologiya faniga asos solgan olim.", facts:["\"Devonu lug'otit turk\" lug'atini yaratdi","Turkiy xalqlar tarixi va geografiyasini yoritdi","Turkologiya faniga asos soldi"] },
+  { id:11, name:"Yusuf Xos Hojib", years:"1019–1085", region:"markaziy", era:"O'rta asrlar", role:"Shoir, davlat arbobi", bio:"\"Qutadg'u bilig\" (Saodatga eltuvchi bilim) dostonining muallifi. Bu asar turkiy tildagi ilk didaktik-falsafiy doston hisoblanadi.", facts:["\"Qutadg'u bilig\" dostonini yozdi","Adolatli davlat boshqaruvi g'oyalarini ilgari surdi","Turkiy adabiyotning ilk yirik namunasini yaratdi"] },
+  { id:12, name:"Qozizoda Rumiy", years:"1364–1436", region:"markaziy", era:"O'rta asrlar", role:"Matematik, astronom", bio:"Ulug'bek rasadxonasining birinchi rahbari, Samarqand ilmiy maktabining asoschilaridan biri.", facts:["Samarqand rasadxonasiga rahbarlik qildi","Trigonometriya sohasida asarlar yozdi","Ulug'bekning ustozi bo'lgan"] },
+  { id:13, name:"Iskandar Zulqarnayn (Aleksandr Makedonskiy)", years:"mil.av. 356–323", region:"jahon", era:"Qadimgi dunyo", role:"Qo'mondon, imperator", bio:"Qadimgi dunyoning eng yirik imperiyalaridan birini barpo etgan Makedoniya podshosi. Yunon va Sharq madaniyatlarini bir-biriga yaqinlashtirdi.", facts:["O'n yil ichida ulkan imperiya barpo etdi","Iskandariya shaharlarini bunyod etdi","Ellinizm madaniyati tarqalishiga sabab bo'ldi"] },
+  { id:14, name:"Chingizxon", years:"1162–1227", region:"jahon", era:"O'rta asrlar", role:"Xon, sarkarda", bio:"Mo'g'ul qabilalarini birlashtirib, tarixdagi eng katta quruqlik imperiyasiga asos solgan xon va sarkarda.", facts:["Mo'g'ul imperiyasiga asos soldi","Osiyo va Yevropaning katta qismini bosib oldi","Harbiy tashkilot va yasoq qonunlarini joriy qildi"] },
+  { id:15, name:"Yuliy Tsezar", years:"mil.av. 100–44", region:"jahon", era:"Qadimgi dunyo", role:"Sarkarda, davlat arbobi", bio:"Qadimgi Rim respublikasini imperiyaga aylantirish yo'lini boshlagan sarkarda va siyosatchi.", facts:["Galliyani bosib oldi","Rim davlat tizimini isloh qildi","Rim taqvimini joriy etdi"] },
+  { id:16, name:"Konfutsiy", years:"mil.av. 551–479", region:"jahon", era:"Qadimgi dunyo", role:"Faylasuf, mutafakkir", bio:"Xitoy falsafasi va axloq ta'limotining asoschisi. Uning g'oyalari Sharqiy Osiyo madaniyatiga asrlar davomida ta'sir ko'rsatdi.", facts:["Konfutsiychilik ta'limotiga asos soldi","Axloq va davlat boshqaruvi haqida ta'lim berdi","\"Suhbat va mulohazalar\" asarida g'oyalari jamlangan"] },
+  { id:17, name:"Mahatma Gandi", years:"1869–1948", region:"jahon", era:"Eng yangi davr", role:"Siyosiy va ijtimoiy yetakchi", bio:"Hindistonning mustaqillik kurashiga zo'ravonliksiz qarshilik ko'rsatish g'oyasi orqali rahbarlik qilgan yetakchi.", facts:["Zo'ravonliksiz qarshilik strategiyasini ishlab chiqdi","Hindistonning Britaniyadan mustaqillikka erishishiga hissa qo'shdi","Dunyo miqyosida tinch kurash ramziga aylandi"] },
+  { id:18, name:"Kleopatra VII", years:"mil.av. 69–30", region:"jahon", era:"Qadimgi dunyo", role:"Qadimgi Misr malikasi", bio:"Ptolemeylar sulolasining so'nggi hukmdori, siyosiy mahorati bilan tanilgan malika.", facts:["Qadimgi Misrning so'nggi malikasi bo'ldi","Rim bilan murakkab siyosiy ittifoqlar tuzdi","Bir necha tilni bilgan bilimdon hukmdor edi"] },
+  { id:19, name:"Marko Polo", years:"1254–1324", region:"jahon", era:"O'rta asrlar", role:"Sayohatchi, savdogar", bio:"Buyuk Ipak yo'li orqali Yevropadan Xitoygacha sayohat qilgan va bu haqda kitob yozgan venetsiyalik sayyoh.", facts:["Xitoyga uzoq muddatli sayohat qildi","\"Dunyo mo'jizalari haqida kitob\" asarini yozdi","Sharq va G'arb o'rtasida bilim almashinuviga hissa qo'shdi"] },
+  { id:20, name:"Leonardo da Vinchi", years:"1452–1519", region:"jahon", era:"Yangi davr", role:"Rassom, ixtirochi, olim", bio:"Uyg'onish davrining eng ko'p qirrali siymolaridan biri — rassom, muhandis va tabiatshunos.", facts:["\"Mona Liza\" va \"Oxirgi tugun\" asarlarini yaratdi","Anatomiya va muhandislik sohalarida tadqiqotlar olib bordi","Uchar mashinalarning dastlabki chizmalarini yaratdi"] },
+  { id:21, name:"Abraham Linkoln", years:"1809–1865", region:"jahon", era:"Yangi davr", role:"AQSh prezidenti", bio:"AQShning 16-prezidenti, Fuqarolar urushi davrida mamlakatni boshqargan va qullikni bekor qilgan davlat arbobi.", facts:["Qullikni bekor qilish farmoniga imzo chekdi","Fuqarolar urushi davrida ittifoqni saqlab qoldi","AQSh tarixidagi eng nufuzli prezidentlardan biri hisoblanadi"] },
+  { id:22, name:"Pyotr I (Buyuk)", years:"1672–1725", region:"jahon", era:"Yangi davr", role:"Rossiya imperatori", bio:"Rossiyani Yevropa andozalari asosida isloh qilgan, mamlakatni imperiyaga aylantirgan hukmdor.", facts:["Rossiya flotini barpo etdi","Sankt-Peterburg shahriga asos soldi","Ma'muriy va harbiy islohotlar o'tkazdi"] },
+  { id:23, name:"Napoleon Bonapart", years:"1769–1821", region:"jahon", era:"Yangi davr", role:"Imperator, sarkarda", bio:"Fransiya imperatori, harbiy va huquqiy islohotlari bilan Yevropa tarixiga chuqur iz qoldirgan sarkarda.", facts:["\"Napoleon kodeksi\" fuqarolik qonunlarini joriy etdi","Yevropaning katta qismini nazorat qilgan imperiya barpo etdi","Harbiy strategiyada yangi usullarni qo'lladi"] },
+  { id:24, name:"Uinston Cherchill", years:"1874–1965", region:"jahon", era:"Eng yangi davr", role:"Buyuk Britaniya bosh vaziri", bio:"Ikkinchi jahon urushi davrida Buyuk Britaniyaga rahbarlik qilgan siyosatchi va notiq.", facts:["Ikkinchi jahon urushida Britaniyaga rahbarlik qildi","Nutqchilik mahorati bilan mashhur bo'ldi","Adabiyot bo'yicha Nobel mukofotiga sazovor bo'ldi"] }
+];
+
+const ERAS = ["Barchasi", "Qadimgi dunyo", "O'rta asrlar", "Yangi davr", "Eng yangi davr"];
+let query = "";
+let region = "barchasi";
+let era = "Barchasi";
+
+function monogramColor(r) { return r === "markaziy" ? "#2F5D62" : "#A4462B"; }
+
+function renderChips() {
+  const regionRow = document.getElementById("regionRow");
+  const regions = [ ["barchasi","Barchasi"], ["markaziy","Markaziy Osiyo"], ["jahon","Jahon tarixi"] ];
+  regionRow.innerHTML = regions.map(([key,label]) =>
+    `<button class="chip ${region===key?'active':''}" data-region="${key}">${label}</button>`
+  ).join("");
+  regionRow.querySelectorAll("button").forEach(btn => {
+    btn.onclick = () => { region = btn.dataset.region; renderChips(); renderGrid(); };
+  });
+
+  const eraRow = document.getElementById("eraRow");
+  eraRow.innerHTML = ERAS.map(e =>
+    `<button class="chip era ${era===e?'active':''}" data-era="${e}">${e}</button>`
+  ).join("");
+  eraRow.querySelectorAll("button").forEach(btn => {
+    btn.onclick = () => { era = btn.dataset.era; renderChips(); renderGrid(); };
+  });
+}
+
+function renderGrid() {
+  const q = query.trim().toLowerCase();
+  const filtered = FIGURES.filter(f => {
+    const matchesQuery = q === "" || f.name.toLowerCase().includes(q) || f.role.toLowerCase().includes(q);
+    const matchesRegion = region === "barchasi" || f.region === region;
+    const matchesEra = era === "Barchasi" || f.era === era;
+    return matchesQuery && matchesRegion && matchesEra;
+  });
+
+  document.getElementById("count").textContent = filtered.length + " ta natija topildi";
+  const grid = document.getElementById("grid");
+  const empty = document.getElementById("empty");
+
+  if (filtered.length === 0) {
+    grid.innerHTML = "";
+    empty.style.display = "block";
+    return;
+  }
+  empty.style.display = "none";
+
+  grid.innerHTML = filtered.map(f => `
+    <button class="card" data-id="${f.id}">
+      <div class="mono" style="background: radial-gradient(circle at 30% 30%, ${monogramColor(f.region)}dd, ${monogramColor(f.region)});">${f.name.trim()[0]}</div>
+      <div>
+        <div class="name">${f.name}</div>
+        <div class="years">${f.years}</div>
+        <div class="role">${f.role}</div>
+      </div>
+    </button>
+  `).join("");
+
+  grid.querySelectorAll(".card").forEach(card => {
+    card.onclick = () => openSheet(parseInt(card.dataset.id));
+  });
+}
+
+function openSheet(id) {
+  const f = FIGURES.find(x => x.id === id);
+  const sheet = document.getElementById("sheet");
+  sheet.innerHTML = `
+    <div class="sheet-top">
+      <div class="sheet-head">
+        <div class="mono" style="background: radial-gradient(circle at 30% 30%, ${monogramColor(f.region)}dd, ${monogramColor(f.region)});">${f.name.trim()[0]}</div>
+        <div>
+          <h2 class="serif">${f.name}</h2>
+          <div class="meta">${f.years} • ${f.era}</div>
+        </div>
+      </div>
+      <button class="close-btn" id="closeBtn">×</button>
+    </div>
+    <p class="label">${f.role}</p>
+    <p class="bio">${f.bio}</p>
+    <p class="label">Nima bilan mashhur</p>
+    <ul class="facts">${f.facts.map(x => `<li>${x}</li>`).join("")}</ul>
+  `;
+  document.getElementById("overlay").classList.add("show");
+  document.getElementById("closeBtn").onclick = closeSheet;
+}
+
+function closeSheet() {
+  document.getElementById("overlay").classList.remove("show");
+}
+
+document.getElementById("overlay").addEventListener("click", (e) => {
+  if (e.target.id === "overlay") closeSheet();
+});
+document.getElementById("search").addEventListener("input", (e) => {
+  query = e.target.value;
+  renderGrid();
+});
+
+renderChips();
+renderGrid();
+</script>
+</body>
+</html> },
